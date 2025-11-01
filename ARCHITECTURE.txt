@@ -1,0 +1,130 @@
+"""
+Othello Online Multiplayer - Architecture Overview
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                        GAME SERVER (server.py)                       │
+│                                                                       │
+│  - Listens on port 5555 (default)                                   │
+│  - Manages game matchmaking                                          │
+│  - Forwards moves between players                                    │
+│  - Handles disconnections                                            │
+│                                                                       │
+│  Components:                                                         │
+│  ┌─────────────────────────────────────────────────────────┐       │
+│  │ GameServer Class                                         │       │
+│  │  - waiting_players: []                                   │       │
+│  │  - games: {game_id -> game_data}                        │       │
+│  │  - clients: {socket -> player_info}                     │       │
+│  └─────────────────────────────────────────────────────────┘       │
+│                                                                       │
+└───────────────────────┬─────────────────┬────────────────────────────┘
+                        │                 │
+                    TCP Socket        TCP Socket
+                        │                 │
+         ┌──────────────┴────┐       ┌───┴──────────────────┐
+         │                   │       │                       │
+┌────────▼─────────┐  ┌──────▼───────────┐  ┌───────────────▼──────────┐
+│   PLAYER 1       │  │   PLAYER 2       │  │   PLAYER 3               │
+│   (Client)       │  │   (Client)       │  │   (Waiting...)           │
+│                  │  │                  │  │                          │
+│  main.py         │  │  main.py         │  │  main.py                 │
+│  + network.py    │  │  + network.py    │  │  + network.py            │
+│                  │  │                  │  │                          │
+│  Color: Black    │  │  Color: White    │  │  In matchmaking queue    │
+└──────────────────┘  └──────────────────┘  └──────────────────────────┘
+
+
+Message Flow Example:
+═══════════════════════
+
+1. CONNECTION & MATCHMAKING
+   Player 1 connects → Server adds to waiting_players
+   Player 2 connects → Server matches with Player 1
+   
+   Server → Player 1: {'type': 'game_start', 'color': 'B', 'game_id': 'game_0'}
+   Server → Player 2: {'type': 'game_start', 'color': 'W', 'game_id': 'game_0'}
+
+2. GAME MOVE
+   Player 1 places disc at (3, 4)
+   
+   Player 1 → Server: {'type': 'move', 'row': 3, 'col': 4, 'player': 'B'}
+   Server → Player 2: {'type': 'move', 'row': 3, 'col': 4, 'player': 'B'}
+   
+   [Player 2's board updates automatically]
+
+3. NEXT MOVE
+   Player 2 places disc at (5, 3)
+   
+   Player 2 → Server: {'type': 'move', 'row': 5, 'col': 3, 'player': 'W'}
+   Server → Player 1: {'type': 'move', 'row': 5, 'col': 3, 'player': 'W'}
+   
+   [Player 1's board updates automatically]
+
+4. DISCONNECTION
+   Player 1 disconnects or closes game
+   
+   Server detects disconnect
+   Server → Player 2: {'type': 'opponent_disconnected'}
+   
+   [Player 2 sees "Opponent Disconnected!" message]
+
+
+Network Protocol:
+═════════════════
+
+Message Types:
+- 'waiting'              : Player in matchmaking queue
+- 'game_start'          : Game begins, assigns colors
+- 'move'                : Player made a move
+- 'chat'                : (Reserved for future use)
+- 'opponent_disconnected': Opponent left the game
+
+
+Client States:
+══════════════
+
+STATE_MAIN_MENU           → Start screen
+STATE_PLAY_MODE           → Choose game mode
+STATE_ONLINE_CONNECT      → Enter server address
+STATE_ONLINE_WAITING      → Waiting for opponent
+STATE_PLAYING             → Active game (online/offline)
+STATE_DIFFICULTY          → AI difficulty selection
+
+
+Key Variables:
+══════════════
+
+online_mode              : bool - Is this an online game?
+online_player_color      : str  - 'B' or 'W' for this player
+network_client           : NetworkClient - Connection handler
+waiting_for_opponent     : bool - In matchmaking?
+opponent_disconnected    : bool - Did opponent leave?
+
+
+Security Considerations:
+════════════════════════
+
+⚠️ This is a basic implementation for learning/fun. For production:
+   - Add authentication
+   - Validate all moves server-side
+   - Encrypt traffic (TLS/SSL)
+   - Implement rate limiting
+   - Add proper error handling
+   - Use a production-grade server framework
+   - Implement reconnection logic
+
+
+Performance Notes:
+══════════════════
+
+✓ Threading for non-blocking I/O
+✓ Message queue for smooth gameplay
+✓ Timeout handling (5 seconds)
+✓ Background receive loop
+✓ Graceful disconnect handling
+
+Typical Latency:
+- LAN: 1-10 ms
+- Internet: 20-200 ms
+- Animation smooths out latency
+"""

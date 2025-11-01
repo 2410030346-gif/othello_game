@@ -1,0 +1,79 @@
+{
+    "1d2eac8a9d2a": {
+        "user_id": "1d2eac8a9d2a",
+        "email": "2410030346@klh.edu.in",
+        "username": "gaurav",
+        "provider": "google",
+        "created_at": "2025-10-31 10:51:24",
+        "last_login": "2025-10-31 10:51:24",
+        "login_count": 1,
+        "game_history": [],
+        "stats": {
+            "total_games": 0,
+            "wins": 0,
+            "losses": 0,
+            "draws": 0,
+            "win_rate": 0.0,
+            "total_score": 0,
+            "highest_score": 0,
+            "vs_ai_games": 0,
+            "vs_player_games": 0,
+            "online_games": 0
+        }
+    },
+    "28a7c8b10dd5": {
+        "user_id": "28a7c8b10dd5",
+        "email": "2410030346",
+        "username": "gaurav",
+        "provider": "google",
+        "created_at": "2025-10-31 10:51:55",
+        "last_login": "2025-10-31 10:51:55",
+        "login_count": 1,
+        "game_history": [],
+        "stats": {
+            "total_games": 0,
+            "wins": 0,
+            "losses": 0,
+            "draws": 0,
+            "win_rate": 0.0,
+            "total_score": 0,
+            "highest_score": 0,
+            "vs_ai_games": 0,
+            "vs_player_games": 0,
+            "online_games": 0
+        }
+    },
+    "5cbf7d656620": {
+        "user_id": "5cbf7d656620",
+        "email": "2410030346@gmail.com",
+        "username": "ninja",
+        "provider": "google",
+        "created_at": "2025-10-31 11:25:33",
+        "last_login": "2025-10-31 11:26:58",
+        "login_count": 2,
+        "game_history": [
+            {
+                "game_mode": "vs_friend",
+                "result": "win",
+                "player_score": 36,
+                "opponent_score": 28,
+                "difficulty": "N/A",
+                "duration": 43,
+                "timestamp": "2025-10-31 11:26:26",
+                "date": "2025-10-31"
+            }
+        ],
+        "stats": {
+            "total_games": 1,
+            "wins": 1,
+            "losses": 0,
+            "draws": 0,
+            "win_rate": 100.0,
+            "total_score": 36,
+            "highest_score": 36,
+            "vs_ai_games": 0,
+            "vs_player_games": 1,
+            "online_games": 0
+        }
+    }
+}
