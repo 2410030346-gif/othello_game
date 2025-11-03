@@ -7,25 +7,29 @@ Players can connect and get automatically matched.
 Usage:
     python server.py [port]
     
-Default port: 5555
+Default port: 5555 (or PORT environment variable for cloud deployment)
 """
 
 import sys
+import os
 from network import GameServer
 
 def main():
-    port = 5555
+    # For Render deployment, use PORT environment variable
+    # For local testing, use command line argument or default 5555
+    port = int(os.environ.get('PORT', 5555))
     
     if len(sys.argv) > 1:
         try:
             port = int(sys.argv[1])
         except ValueError:
-            print("Invalid port number. Using default port 5555")
+            print(f"Invalid port number. Using port {port}")
     
     print("=" * 50)
     print("Othello Online Game Server")
     print("=" * 50)
     print(f"Starting server on port {port}...")
+    print(f"Environment: {'Render' if os.environ.get('RENDER') else 'Local'}")
     
     server = GameServer(port)
     

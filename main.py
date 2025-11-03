@@ -115,6 +115,7 @@ screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE), pygame.RESIZABLE)
 pygame.display.set_caption("Othello")
 
 # Game states
+STATE_WELCOME = "welcome"
 STATE_MAIN_MENU = "main_menu"
 STATE_LOGIN = "login"
 STATE_USER_INPUT = "user_input"
@@ -128,7 +129,7 @@ STATE_ACHIEVEMENTS = "achievements"
 STATE_FRIENDS = "friends"
 STATE_ADD_FRIEND = "add_friend"
 
-current_state = STATE_MAIN_MENU
+current_state = STATE_WELCOME
 
 # User authentication variables
 selected_provider = None
@@ -387,7 +388,7 @@ def validate_email_format(email, provider):
     
     return True, ""
 
-def draw_player_panel(surface, x, y, width, height, player_name, player_color, disc_count, is_current_turn, is_you=False, avatar_emoji=None):
+def draw_player_panel(surface, x, y, width, height, player_name, player_color, disc_count, is_current_turn, is_you=False, avatar_emoji=None, ai_enabled=False):
     """Draw a player info panel with avatar and status"""
     # Panel background with gradient
     panel_rect = pygame.Rect(x, y, width, height)
@@ -485,13 +486,26 @@ def draw_player_panel(surface, x, y, width, height, player_name, player_color, d
     # Turn indicator
     if is_current_turn:
         turn_font = pygame.font.SysFont("Arial", 16, bold=True)
-        turn_text = turn_font.render("YOUR TURN", True, (255, 215, 0))
+        # In AI mode: show "YOUR TURN" for player, "AI'S TURN" for AI
+        # In Friend mode: just show "YOUR TURN" for current player
+        if ai_enabled:
+            if is_you:
+                turn_text = turn_font.render("YOUR TURN", True, (255, 215, 0))
+                arrow_color = (255, 215, 0)
+            else:
+                turn_text = turn_font.render("AI'S TURN", True, (255, 100, 100))
+                arrow_color = (255, 100, 100)
+        else:
+            # Friend mode - show YOUR TURN for whoever's turn it is
+            turn_text = turn_font.render("YOUR TURN", True, (255, 215, 0))
+            arrow_color = (255, 215, 0)
+        
         turn_rect = turn_text.get_rect(center=(avatar_x, y + height - 35))
         
         # Animated arrow
         arrow_y = turn_rect.top - 20
         arrow_offset = int(5 * math.sin(pygame.time.get_ticks() / 200))
-        pygame.draw.polygon(surface, (255, 215, 0), [
+        pygame.draw.polygon(surface, arrow_color, [
             (avatar_x, arrow_y + arrow_offset),
             (avatar_x - 8, arrow_y - 10 + arrow_offset),
             (avatar_x + 8, arrow_y - 10 + arrow_offset)
@@ -544,6 +558,123 @@ def draw_main_menu(surface, width, height, mouse_pos):
     draw_button(surface, exit_rect, "✖ EXIT", button_font, (220, 50, 80), (255, 80, 110), exit_hover)
     
     return play_rect, exit_rect
+
+def draw_welcome_screen(surface, width, height):
+    """Draw the attractive welcome screen with tap to play"""
+    # Animated gradient background with moving colors
+    t = pygame.time.get_ticks() / 1000.0
+    
+    # Create dynamic gradient colors
+    color1_r = int(20 + 15 * math.sin(t * 0.5))
+    color1_g = int(15 + 10 * math.sin(t * 0.3))
+    color1_b = int(40 + 20 * math.sin(t * 0.7))
+    
+    color2_r = int(60 + 20 * math.sin(t * 0.4))
+    color2_g = int(30 + 15 * math.sin(t * 0.6))
+    color2_b = int(100 + 30 * math.sin(t * 0.5))
+    
+    bg_rect = pygame.Rect(0, 0, width, height)
+    draw_gradient_rect(surface, bg_rect, (color1_r, color1_g, color1_b), (color2_r, color2_g, color2_b), vertical=True)
+    
+    # Draw animated floating circles in background
+    for i in range(8):
+        angle = t * 0.8 + i * (2 * 3.14159 / 8)
+        x = int(width // 2 + 150 * math.cos(angle))
+        y = int(height // 2 + 100 * math.sin(angle * 0.7))
+        radius = int(40 + 20 * math.sin(t * 2 + i))
+        alpha_surface = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+        pygame.draw.circle(alpha_surface, (100, 50, 150, 60), (radius, radius), radius)
+        surface.blit(alpha_surface, (x - radius, y - radius))
+    
+    # Draw larger pulsing circles
+    for i in range(4):
+        angle = t * 0.5 + i * (2 * 3.14159 / 4)
+        x = int(width // 2 + 250 * math.cos(angle))
+        y = int(height // 2 + 200 * math.sin(angle))
+        radius = int(60 + 30 * math.sin(t * 1.5 + i))
+        alpha_surface = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+        pygame.draw.circle(alpha_surface, (150, 100, 200, 40), (radius, radius), radius)
+        surface.blit(alpha_surface, (x - radius, y - radius))
+    
+    # Draw game discs floating around
+    for i in range(6):
+        angle = t * 1.2 + i * (2 * 3.14159 / 6)
+        x = int(width // 2 + 200 * math.cos(angle))
+        y = int(height // 2 + 150 * math.sin(angle * 1.3))
+        disc_radius = 25
+        
+        # Alternate between black and white discs
+        if i % 2 == 0:
+            pygame.draw.circle(surface, BLACK, (x, y), disc_radius)
+            pygame.draw.circle(surface, (40, 40, 40), (x, y), disc_radius, 3)
+        else:
+            pygame.draw.circle(surface, WHITE, (x, y), disc_radius)
+            pygame.draw.circle(surface, (220, 220, 220), (x, y), disc_radius, 3)
+    
+    # Main title with shadow effect
+    title_font = pygame.font.SysFont("Arial", 90, bold=True)
+    
+    # Shadow
+    shadow_text = title_font.render("WELCOME TO", True, (0, 0, 0))
+    shadow_rect = shadow_text.get_rect(center=(width // 2 + 3, height // 3 + 3))
+    surface.blit(shadow_text, shadow_rect)
+    
+    # Main text with gradient effect
+    title_text = title_font.render("WELCOME TO", True, (255, 200, 100))
+    title_rect = title_text.get_rect(center=(width // 2, height // 3))
+    surface.blit(title_text, title_rect)
+    
+    # Othello title - bigger and more prominent
+    othello_font = pygame.font.SysFont("Arial", 110, bold=True)
+    
+    # Shadow
+    othello_shadow = othello_font.render("OTHELLO", True, (0, 0, 0))
+    othello_shadow_rect = othello_shadow.get_rect(center=(width // 2 + 4, height // 2 - 20 + 4))
+    surface.blit(othello_shadow, othello_shadow_rect)
+    
+    # Main text
+    othello_text = othello_font.render("OTHELLO", True, (100, 255, 200))
+    othello_rect = othello_text.get_rect(center=(width // 2, height // 2 - 20))
+    surface.blit(othello_text, othello_rect)
+    
+    # Pulsing "Tap to Play" text
+    pulse = abs(math.sin(t * 2))
+    tap_size = int(40 + 10 * pulse)
+    tap_font = pygame.font.SysFont("Arial", tap_size, bold=True)
+    
+    # Create pulsing glow effect
+    glow_alpha = int(100 + 100 * pulse)
+    
+    tap_text = tap_font.render("TAP TO PLAY", True, (255, 255, 100))
+    tap_rect = tap_text.get_rect(center=(width // 2, height // 2 + 120))
+    
+    # Draw glow
+    for offset in range(5, 0, -1):
+        alpha_surface = pygame.Surface((tap_rect.width + offset * 2, tap_rect.height + offset * 2), pygame.SRCALPHA)
+        glow_text = tap_font.render("TAP TO PLAY", True, (255, 200, 50, glow_alpha // offset))
+        glow_rect = glow_text.get_rect(center=(alpha_surface.get_width() // 2, alpha_surface.get_height() // 2))
+        alpha_surface.blit(glow_text, glow_rect)
+        surface.blit(alpha_surface, (tap_rect.x - offset, tap_rect.y - offset))
+    
+    surface.blit(tap_text, tap_rect)
+    
+    # Animated arrow pointing down
+    arrow_y = int(height // 2 + 180 + 10 * math.sin(t * 3))
+    arrow_size = 20
+    arrow_color = (255, 255, 100)
+    
+    # Draw arrow
+    pygame.draw.polygon(surface, arrow_color, [
+        (width // 2, arrow_y + arrow_size),
+        (width // 2 - arrow_size, arrow_y - arrow_size),
+        (width // 2 + arrow_size, arrow_y - arrow_size)
+    ])
+    
+    # Subtle hint at bottom
+    hint_font = pygame.font.SysFont("Arial", 18, italic=True)
+    hint_text = hint_font.render("Click anywhere to continue", True, (150, 150, 200))
+    hint_rect = hint_text.get_rect(center=(width // 2, height - 50))
+    surface.blit(hint_text, hint_rect)
 
 def draw_login_menu(surface, width, height, mouse_pos):
     """Draw the login options screen"""
@@ -1235,8 +1366,20 @@ while running:
     if menu_animation_offset >= 360 or menu_animation_offset <= 0:
         menu_animation_direction *= -1
     
+    # Welcome screen state
+    if current_state == STATE_WELCOME:
+        draw_welcome_screen(screen, width, height)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN:
+                # Any click or key press moves to main menu
+                click_sound.play()
+                current_state = STATE_MAIN_MENU
+    
     # Main menu state
-    if current_state == STATE_MAIN_MENU:
+    elif current_state == STATE_MAIN_MENU:
         play_rect, exit_rect = draw_main_menu(screen, width, height, mouse_pos)
         
         for event in pygame.event.get():
@@ -1797,10 +1940,10 @@ while running:
         
         # Draw player panels
         draw_player_panel(screen, left_panel_x, panel_y, panel_width, panel_height,
-                         black_name, 'B', score['B'], game.current_player == 'B', black_is_you, player1_avatar)
+                         black_name, 'B', score['B'], game.current_player == 'B', black_is_you, player1_avatar, AI_ENABLED)
         
         draw_player_panel(screen, right_panel_x, panel_y, panel_width, panel_height,
-                         white_name, 'W', score['W'], game.current_player == 'W', white_is_you, player2_avatar)
+                         white_name, 'W', score['W'], game.current_player == 'W', white_is_you, player2_avatar, AI_ENABLED)
 
         # Buttons (top-right corner)
         button_width = max(80, width // 8)
@@ -2211,12 +2354,6 @@ while running:
                             network_client.send({'type': 'move', 'row': row, 'col': col, 'player': game.current_player})
                         
                         game.switch_player()
-                        
-                        # Add smooth transition after player move
-                        if AI_ENABLED:
-                            # Show "YOUR MOVE" confirmation with fade effect
-                            pygame.display.flip()
-                            pygame.time.wait(800)  # Brief pause to see the move
 
         # Handle online opponent moves
         if online_mode and network_client.connected:
@@ -2248,36 +2385,18 @@ while running:
             pygame.draw.rect(screen, (40, 40, 40), disconnect_rect.inflate(20, 10))
             screen.blit(disconnect_text, disconnect_rect)
 
-        # Process AI turns
-        def _process_auto_turns():
-            if game.check_game_over():
-                return False
-            
-            if game.pass_if_needed():
-                return True
-
-            if AI_ENABLED and game.current_player == AI_COLOR:
-                global ai_thinking, last_move
-                ai_thinking = True
-                
-                # Force immediate redraw to show "AI'S TURN" indicator
-                # This happens before the AI actually thinks
+        # Process AI turns - Simple and smooth like friend mode
+        if AI_ENABLED and not game.check_game_over() and game.current_player == AI_COLOR:
+            # Check if we need to pass
+            if not board.get_valid_moves(game.current_player):
+                game.pass_if_needed()
+            else:
+                # Small visual pause so player can see their move (300ms)
                 pygame.display.flip()
                 pygame.event.pump()
+                pygame.time.wait(300)
                 
-                # Display AI type indicator
-                if USE_MODERN_AI and modern_ai_instance:
-                    overlay_text = font.render("🧠 Modern AI thinking...", True, (100, 200, 255))
-                else:
-                    overlay_text = font.render("AI thinking...", True, (255, 105, 180))
-                
-                overlay_rect = overlay_text.get_rect(center=(width // 2, 20))
-                screen.blit(overlay_text, overlay_rect)
-                pygame.display.flip()
-                pygame.event.pump()
-                pygame.time.wait(1500)  # AI thinking time
-                
-                # Choose move using Modern AI or Classic AI
+                # AI makes its move
                 if USE_MODERN_AI and modern_ai_instance:
                     # Use Modern Deep Learning AI
                     valid_moves = board.get_valid_moves(AI_COLOR)
@@ -2286,7 +2405,6 @@ while running:
                     # Use Classic Minimax AI
                     ai_move = choose_move(board, AI_COLOR, difficulty=AI_DIFFICULTY)
                 
-                ai_thinking = False
                 if ai_move:
                     flipped = board.place_disc(ai_move[0], ai_move[1], AI_COLOR)
                     place_sound.play()  # Play placement sound
@@ -2300,17 +2418,6 @@ while running:
                     if flipped:
                         flip_sound.play()
                     game.switch_player()
-                    
-                    # Smooth transition - show AI move with multiple screen updates
-                    for i in range(40):  # Smooth 4-second display (40 frames * 100ms)
-                        pygame.display.flip()
-                        pygame.time.wait(100)
-                        pygame.event.pump()  # Keep window responsive
-                    return True
-            return False
-
-        while not game.check_game_over() and _process_auto_turns():
-            continue
     
     # Draw achievement notifications if any
     if newly_unlocked_achievements and achievement_notification_time:

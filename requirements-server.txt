@@ -1,0 +1,2 @@
+# Server-only requirements (no Pygame or heavy dependencies)
+# Minimal dependencies for the multiplayer server

@@ -1,0 +1,45 @@
+# Ignore game client files (only deploy server)
+main.py
+modern_ai.py
+ai.py
+sounds.py
+
+# Ignore documentation
+README.md
+MODERN_AI_README.md
+FLOWCHART.md
+
+# Ignore saved data
+saved_games/
+achievements.json
+settings.json
+*.pth
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Ignore env files
+.env
+.venv
+env/
+venv/
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore git
+.git/
+.gitignore
+
+# Ignore media files
+*.png
+*.jpg
+*.mp3
+*.wav
