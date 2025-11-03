@@ -1278,7 +1278,7 @@ def draw_online_connect_menu(surface, width, height, mouse_pos, server_input, er
     
     # Hint text
     hint_font = pygame.font.SysFont("Arial", 18)
-    hint_text = hint_font.render("(e.g., localhost:5555 or 192.168.1.100:5555)", True, (150, 150, 150))
+    hint_text = hint_font.render("(Default: othello-game-1-mi04.onrender.com:10001)", True, (150, 150, 150))
     hint_rect = hint_text.get_rect(center=(width // 2, height // 2 - 30))
     surface.blit(hint_text, hint_rect)
     
@@ -1348,7 +1348,7 @@ def draw_online_waiting_menu(surface, width, height):
     return cancel_rect
 
 # Online connection variables
-server_input = "localhost:5555"
+server_input = "othello-game-1-mi04.onrender.com:10001"
 connection_error = ""
 
 # Pick initial random avatars for players
