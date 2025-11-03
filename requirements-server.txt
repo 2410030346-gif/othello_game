@@ -1,2 +1,6 @@
 # Server-only requirements (no Pygame or heavy dependencies)
-# Minimal dependencies for the multiplayer server
+# The server only uses Python standard library modules
+# No external dependencies needed - pure Python sockets
+
+# If you need to add any future dependencies, list them below:
+# example: requests==2.31.0
