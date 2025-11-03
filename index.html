@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Othello Game - Desktop game with AI opponent and online multiplayer">
+    <title>Othello Game - Download Desktop Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .tagline {
+            font-size: 1.3em;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 2px solid #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #00d4ff;
+        }
+
+        .game-modes {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+        }
+
+        .game-modes h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #00d4ff;
+        }
+
+        .mode-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .mode-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .mode-item h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #00d4ff;
+        }
+
+        .mode-item ul {
+            margin-left: 20px;
+            opacity: 0.9;
+        }
+
+        .download-section {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .download-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #00d4ff;
+        }
+
+        .system-requirements {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 255, 0, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 2px solid #00ff00;
+            margin-top: 20px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            margin-top: 40px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #00d4ff;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.7;
+        }
+
+        .warning-box {
+            background: rgba(255, 165, 0, 0.2);
+            border: 2px solid #ffa500;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .warning-box strong {
+            color: #ffa500;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            .game-icon {
+                font-size: 3em;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="game-icon">⚫⚪</div>
+            <h1>Othello Game</h1>
+            <p class="tagline">Classic board game with AI opponent and online multiplayer</p>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>Server Online</span>
+            </div>
+        </header>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>Advanced AI</h3>
+                <p>Play against intelligent AI with three difficulty levels: Easy, Medium, and Hard (Minimax algorithm with depth 3)</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Local Multiplayer</h3>
+                <p>Play with friends on the same computer. Hot-seat multiplayer with turn-based gameplay.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>Online Multiplayer</h3>
+                <p>Connect with players worldwide through our dedicated game server. Real-time network gameplay!</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Beautiful Graphics</h3>
+                <p>Modern UI with smooth animations, visual effects, and polished gameplay experience built with Pygame.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Fast & Responsive</h3>
+                <p>Optimized game engine with 60 FPS gameplay, instant move validation, and smooth piece flipping animations.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Complete Features</h3>
+                <p>Move hints, valid move highlighting, game statistics, undo functionality, and comprehensive game rules.</p>
+            </div>
+        </section>
+
+        <section class="game-modes">
+            <h2>🎮 Game Modes</h2>
+            <div class="mode-list">
+                <div class="mode-item">
+                    <h3>1. Play vs AI</h3>
+                    <ul>
+                        <li><strong>Easy:</strong> Random moves for beginners</li>
+                        <li><strong>Medium:</strong> Strategic corner preference</li>
+                        <li><strong>Hard:</strong> Minimax algorithm with depth 3</li>
+                        <li>AI thinking animation with 800ms delay</li>
+                    </ul>
+                </div>
+
+                <div class="mode-item">
+                    <h3>2. Play vs Friend (Local)</h3>
+                    <ul>
+                        <li>Two players on the same computer</li>
+                        <li>Hot-seat multiplayer</li>
+                        <li>Turn-based gameplay</li>
+                    </ul>
+                </div>
+
+                <div class="mode-item">
+                    <h3>3. Play Online 🌐 NEW!</h3>
+                    <ul>
+                        <li>Network multiplayer over LAN or internet</li>
+                        <li>Client-server architecture</li>
+                        <li>Automatic matchmaking</li>
+                        <li>Real-time synchronization</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="download-section">
+            <h2>📥 Download for Windows</h2>
+            <p style="font-size: 1.2em; margin-bottom: 30px;">Get the standalone executable - no Python installation required!</p>
+            
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary" onclick="showDownloadInfo(); return false;">
+                    ⬇️ Download Game (912 MB)
+                </a>
+                <a href="https://github.com/2410030346-gif/othello_game" class="btn btn-secondary" target="_blank">
+                    📂 View on GitHub
+                </a>
+            </div>
+
+            <div class="system-requirements">
+                <h3 style="color: #00d4ff; margin-bottom: 15px;">💻 System Requirements</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li>✅ <strong>OS:</strong> Windows 10/11 (64-bit)</li>
+                    <li>✅ <strong>RAM:</strong> 2 GB minimum</li>
+                    <li>✅ <strong>Storage:</strong> 1 GB free space</li>
+                    <li>✅ <strong>Display:</strong> 1024x768 or higher</li>
+                    <li>✅ <strong>Internet:</strong> Required for online multiplayer only</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Important Note:</strong><br>
+                This is a desktop application that runs on Windows computers. It cannot run in web browsers or on mobile devices. 
+                To play, download the .exe file and run it on your Windows PC.
+            </div>
+        </section>
+
+        <section class="download-section">
+            <h2>🚀 Quick Start</h2>
+            <div style="text-align: left; max-width: 600px; margin: 0 auto;">
+                <h3 style="color: #00d4ff; margin-bottom: 15px;">Installation Steps:</h3>
+                <ol style="font-size: 1.1em; line-height: 2;">
+                    <li>Download <code>OthelloGame.exe</code> from the link above</li>
+                    <li>Run the downloaded file (Windows may show security warning - click "More info" → "Run anyway")</li>
+                    <li>First launch may take 30-60 seconds</li>
+                    <li>Choose your game mode and start playing!</li>
+                </ol>
+
+                <h3 style="color: #00d4ff; margin-top: 30px; margin-bottom: 15px;">For Online Multiplayer:</h3>
+                <ol style="font-size: 1.1em; line-height: 2;">
+                    <li>Select "Play Online" from the main menu</li>
+                    <li>Game automatically connects to server</li>
+                    <li>Wait for another player or have a friend join</li>
+                    <li>Enjoy real-time gameplay!</li>
+                </ol>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <a href="https://othello-game-1-mi04.onrender.com" class="btn btn-secondary" target="_blank">
+                    🌐 Check Server Status
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <h3>🎓 Built with</h3>
+            <p style="margin: 20px 0; opacity: 0.9;">Python • Pygame • PyTorch • TCP Sockets</p>
+            
+            <div class="footer-links">
+                <a href="https://github.com/2410030346-gif/othello_game" target="_blank">GitHub Repository</a>
+                <a href="https://github.com/2410030346-gif/othello_game/blob/main/README.md" target="_blank">Documentation</a>
+                <a href="https://othello-game-1-mi04.onrender.com" target="_blank">Server Status</a>
+                <a href="https://github.com/2410030346-gif/othello_game/issues" target="_blank">Report Issues</a>
+            </div>
+
+            <p style="margin-top: 30px; opacity: 0.7;">
+                &copy; 2025 Othello Game Project. Open source under MIT License.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        function showDownloadInfo() {
+            alert('📥 Download Instructions:\n\n' +
+                  '1. The game executable (OthelloGame.exe) is 912 MB\n' +
+                  '2. You can download it from:\n' +
+                  '   • GitHub Releases page\n' +
+                  '   • Google Drive/OneDrive link (ask developer)\n\n' +
+                  '3. After download:\n' +
+                  '   • Run OthelloGame.exe\n' +
+                  '   • Windows may show security warning\n' +
+                  '   • Click "More info" → "Run anyway"\n\n' +
+                  '4. First launch takes 30-60 seconds\n\n' +
+                  'For direct download link, please check the GitHub repository or contact the developer.');
+        }
+
+        // Check server status
+        fetch('https://othello-game-1-mi04.onrender.com')
+            .then(response => {
+                if (response.ok) {
+                    console.log('✅ Game server is online');
+                }
+            })
+            .catch(error => {
+                console.log('⚠️ Server status check failed (may be starting up)');
+            });
+    </script>
+</body>
+</html>
