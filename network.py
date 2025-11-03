@@ -132,6 +132,9 @@ class GameServer:
         player_id = f"player_{addr[0]}_{addr[1]}"
         
         try:
+            # Set a timeout for receiving initial data
+            client.settimeout(2.0)
+            
             # Check if we have a waiting player
             if self.waiting_players:
                 # Match with waiting player
@@ -170,13 +173,26 @@ class GameServer:
                     if not data:
                         break
                     
+                    # Check if it's HTTP request (browsers/health checks)
+                    if data.startswith(b'GET ') or data.startswith(b'POST ') or data.startswith(b'HEAD '):
+                        # Send HTTP response and close
+                        response = b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nGame Server - Use game client to connect"
+                        client.send(response)
+                        break
+                    
+                    # Try to unpickle game data
                     message = pickle.loads(data)
                     self._process_message(client, message)
                     
                 except socket.timeout:
                     continue
+                except pickle.UnpicklingError:
+                    # Invalid protocol, silently close
+                    break
                 except Exception as e:
-                    print(f"Client handler error: {e}")
+                    # Only log non-connection errors
+                    if "Connection reset" not in str(e) and "forcibly closed" not in str(e):
+                        print(f"Client handler error: {e}")
                     break
                     
         except Exception as e:
